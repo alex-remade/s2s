@@ -1,0 +1,14 @@
+git+https://github.com/Harshvardhan-To1/chatterbox.git@daa9542fdeb4c94df151a8d85cfd3cec125e3f1a
+torch==2.6.0
+torchvision==0.21.0
+torchaudio==2.6.0
+transformers>=4.37.0
+accelerate==1.8.1
+ffmpeg-python==0.2.0
+librosa==0.11.0
+resemble-perth==1.0.1
+soundfile==0.13.1
+numpy==1.26.4
+httpx==0.27.0
+fal
+
