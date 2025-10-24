@@ -7,15 +7,17 @@ const FAL_API_KEY = process.env.NEXT_PUBLIC_FAL_KEY || "";
 const FAL_ENDPOINT = process.env.NEXT_PUBLIC_FAL_ENDPOINT || "alex-w67ic4anktp1/8a22dddb-5b9a-4e38-98a8-46c7fd0cd42e";
 
 // Configure fal client
-fal.config({
+fal.config({  
   credentials: FAL_API_KEY,
 });
 
-// SpongeBob voice by default! (same as web app demo)
+// Reference voices for voice cloning
 const SPONGEBOB_VOICE = "https://storage.googleapis.com/remade-v2/tests/Spongebob%20Squarepants%20-%20They're%20Using%20Actors.mp3";
+const TRUMP_VOICE = "https://storage.googleapis.com/remade-v2/tests/and-the-mexican-government-is-much-smarter-much-sharper-much-more-cunning-and-they-send-the-bad-ones-over-because-they-d.mp3";
 
 const REFERENCE_VOICES = [
-  { value: SPONGEBOB_VOICE, label: "SpongeBob (Default)" },
+  { value: SPONGEBOB_VOICE, label: "SpongeBob" },
+  { value: TRUMP_VOICE, label: "Donald Trump" },
   // Users can add their own reference audio URLs here
 ];
 
@@ -92,36 +94,20 @@ export default function SpeechToSpeechApp() {
         },
       }) as any;
 
-       console.log(`✅ Full result received:`, result);
-       console.log(`✅ Result data:`, result.data);
-       
-       // Extract from result.data (fal.subscribe returns {data: {...}, requestId: ...})
-       const newText = result.data?.transcribed_text || "";
-       const audioFileUrl = result.data?.audio?.url;
-       
-       console.log(`📝 Transcribed text:`, newText);
-       console.log(`🔊 Audio URL:`, audioFileUrl);
-       
-       if (newText.trim()) {
-         setTranscription((prev) => prev + (prev ? " " : "") + newText);
-         console.log(`📝 Updated transcription in state`);
-       }
-       
-       if (audioFileUrl) {
-         console.log(`🎵 Setting generated audio and attempting playback:`, audioFileUrl);
-         setGeneratedAudio(audioFileUrl);
-         
-         // Auto-play the audio (like web app does)
-         try {
-           const audio = new Audio(audioFileUrl);
-           await audio.play();
-           console.log(`🔊 Audio playback started successfully!`);
-         } catch (playErr) {
-           console.error(`⚠️ Auto-play failed (user interaction may be required):`, playErr);
-         }
-       } else {
-         console.warn(`⚠️ No audio URL found in result`);
-       }
+      console.log(`✅ Result:`, result);
+      
+      // Extract data from fal.subscribe response
+      const responseData = result.data || result;
+      const newText = responseData.transcribed_text || "";
+      if (newText.trim()) {
+        setTranscription((prev) => prev + (prev ? " " : "") + newText);
+        const audioFileUrl = responseData.audio?.url;
+        console.log(`🎵 Audio URL:`, audioFileUrl);
+        if (audioFileUrl) {
+          setGeneratedAudio(audioFileUrl);
+          console.log(`✅ Audio set for playback!`);
+        }
+      }
     } catch (err) {
       console.error(`❌ Error processing chunk ${chunkNumber}:`, err);
       setError(err instanceof Error ? err.message : "Failed to process audio chunk");
@@ -280,7 +266,7 @@ export default function SpeechToSpeechApp() {
         <header className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Real-time Speech-to-Speech</h1>
           <p className="text-gray-400">
-            Transform your voice with AI - Powered by Wizper (STT) + Kokoro (TTS)
+            Transform your voice with AI - Powered by Whisper (STT) + Chatterbox (TTS) | SpongeBob & Trump voices!
           </p>
         </header>
 
@@ -459,16 +445,17 @@ export default function SpeechToSpeechApp() {
           <h3 className="text-lg font-semibold mb-3">How it works</h3>
           <ul className="space-y-2 text-sm text-gray-300">
             <li>✓ Click "Start Recording" to activate your microphone</li>
-            <li>✓ Speak naturally - pauses (800ms silence) trigger automatic processing</li>
+            <li>✓ Speak naturally - pauses trigger automatic processing</li>
             <li>✓ Your speech is transcribed using Whisper (transformers pipeline)</li>
-            <li>✓ Text is converted to speech with <strong>SpongeBob's voice</strong> using Chatterbox TTS voice cloning!</li>
+            <li>✓ Text is converted to speech with your <strong>chosen voice</strong> using Chatterbox TTS voice cloning!</li>
+            <li>✓ Select SpongeBob, Donald Trump, or add your own reference voice</li>
             <li>✓ Generated audio plays automatically when ready</li>
             <li>✓ Adjust exaggeration, temperature, and CFG to fine-tune the voice</li>
           </ul>
 
           <div className="mt-4 p-3 bg-yellow-900/20 border border-yellow-700/50 rounded-lg">
             <p className="text-sm text-yellow-200">
-              <strong>🧽 SpongeBob Voice Active!</strong> Your speech will be transformed into SpongeBob's iconic voice in real-time.
+              <strong>🎙️ Voice Cloning Active!</strong> Choose between SpongeBob or Donald Trump voice to transform your speech in real-time.
             </p>
           </div>
 
