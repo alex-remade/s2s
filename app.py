@@ -170,6 +170,7 @@ class SpeechToSpeechApp(
         "transformers>=4.37.0",  # Let it use the version Chatterbox needs
         "accelerate==1.8.1",
         "ffmpeg-python==0.2.0",
+        "flash-attn>=2.5.0",  # Flash Attention 2 for 30-40% faster inference
         # Other Chatterbox dependencies
         "librosa==0.11.0",
         "resemble-perth==1.0.1",
@@ -194,13 +195,14 @@ class SpeechToSpeechApp(
         print("=== Setup Complete ===")
 
     def _setup_whisper(self) -> None:
-        """Setup Whisper speech-to-text model using transformers pipeline (matches registry)"""
+        """Setup Whisper speech-to-text model using transformers pipeline (optimized for speed)"""
         import torch
         from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 
-        model_id = "openai/whisper-large-v3"
+        # Use turbo model for 2x faster inference
+        model_id = "openai/whisper-large-v3-turbo"
         
-        # Load model (exactly like registry/audio/whisper/model.py)
+        # Load model with optimizations for speed
         model = AutoModelForSpeechSeq2Seq.from_pretrained(
             model_id,
             torch_dtype=torch.float16,
@@ -209,19 +211,19 @@ class SpeechToSpeechApp(
 
         processor = AutoProcessor.from_pretrained(model_id)
 
-        # Create pipeline (based on registry - insanely-fast-whisper approach)
+        # Create pipeline optimized for low latency
         self.stt_pipeline = pipeline(
             "automatic-speech-recognition",
             model=model,
             tokenizer=processor.tokenizer,
             feature_extractor=processor.feature_extractor,
-            chunk_length_s=30,
-            batch_size=24,
+            chunk_length_s=15,  # Reduced from 30 for lower latency
+            batch_size=8,       # Reduced from 24 for faster processing
             torch_dtype=torch.float16,
             device="cuda:0",
         )
         
-        print("✓ Whisper model loaded (matches registry implementation)")
+        print("✓ Whisper-turbo model loaded (optimized for low-latency inference)")
 
     def _setup_chatterbox(self) -> None:
         """Setup Chatterbox text-to-speech model for voice cloning"""
