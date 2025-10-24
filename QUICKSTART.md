@@ -46,14 +46,27 @@ npm install
 # Create environment file
 cp .env.local.example .env.local
 
-# Add your Fal API key to .env.local
-# NEXT_PUBLIC_FAL_KEY=your_key_here
+# Edit .env.local and add:
+# NEXT_PUBLIC_FAL_KEY=your_fal_api_key
+# NEXT_PUBLIC_FAL_ENDPOINT=your-endpoint-id
+# (Get the endpoint ID from the 'fal run' output above)
 
 # Start development server
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
+
+### 3. Test the Real-time Flow
+
+1. Open the dashboard in your browser
+2. Click "Start Recording" and allow microphone access
+3. Speak into your microphone
+4. Pause for 800ms - the app will automatically:
+   - Upload your audio chunk
+   - Transcribe it with Whisper
+   - Clone the SpongeBob voice with your transcribed text
+   - Play the audio back to you in SpongeBob's voice! 🧽
 
 ## Usage
 

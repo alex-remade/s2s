@@ -1,17 +1,21 @@
 # Speech-to-Speech Application
 
 A real-time speech-to-speech application built with Fal Serverless, combining:
-- **Faster-Whisper** (CTranslate2-optimized Whisper) for fast speech-to-text transcription
-- **Kokoro TTS** for natural-sounding text-to-speech synthesis
+- **Whisper** (transformers pipeline) for fast speech-to-text transcription
+- **Chatterbox TTS** for voice cloning text-to-speech synthesis
+
+🧽 **Features SpongeBob voice by default!** Clone any voice from reference audio.
 
 ## Features
 
-- 🎤 **Fast Speech-to-Text**: CTranslate2-optimized Whisper (Faster-Whisper) for low-latency transcription
-- 🔊 **Natural TTS**: Kokoro TTS with multiple voice options
+- 🎤 **Fast Speech-to-Text**: Whisper (transformers) for accurate transcription
+- 🔊 **Voice Cloning TTS**: Chatterbox TTS clones any voice from reference audio
+- 🧽 **SpongeBob Voice**: Default SpongeBob voice for fun real-time transformations
 - 🌍 **Multi-language Support**: Transcribe and translate multiple languages
 - ⚡ **Real-time Processing**: Optimized for low-latency interactions
 - 🎯 **Multiple Endpoints**: Separate endpoints for STT, TTS, and combined speech-to-speech
 - 🏗️ **Self-Contained**: No external dependencies - everything runs in one app
+- 🎛️ **Adjustable Parameters**: Fine-tune exaggeration, temperature, and CFG
 
 ## Deployment
 

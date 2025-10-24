@@ -137,7 +137,7 @@ class SpeechToSpeechInput(BaseModel):
         description="Classifier-free guidance scale. Default is 0.5.",
     )
 
-print("Hello, world!")
+
 class SpeechToSpeechOutput(BaseModel):
     """Output from end-to-end speech-to-speech"""
 
