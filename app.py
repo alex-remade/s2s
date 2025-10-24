@@ -159,18 +159,19 @@ class SpeechToSpeechApp(
     to provide low-latency speech-to-speech capabilities with custom voices (like SpongeBob!).
     """
 
-    machine_type = "GPU-H100"  # Use H100 like registry
+    machine_type = "GPU-H100"  # Use H100 for Flash Attention 2
     requirements = [
-        # Chatterbox TTS dependencies (sets torch version)
+        # Chatterbox TTS dependencies (installs torch==2.6.0)
         "git+https://github.com/Harshvardhan-To1/chatterbox.git@daa9542fdeb4c94df151a8d85cfd3cec125e3f1a",
         "torch==2.6.0",
         "torchvision==0.21.0",
         "torchaudio==2.6.0",
-        # Whisper dependencies (compatible with torch 2.6)
-        "transformers>=4.37.0",  # Let it use the version Chatterbox needs
+        # Flash Attention 2 - using pre-built wheel (30-40% faster)
+        "https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.2.post1/flash_attn-2.7.2.post1+cu12torch2.5cxx11abiFALSE-cp311-cp311-linux_x86_64.whl",
+        # Whisper dependencies
+        "transformers>=4.37.0",
         "accelerate==1.8.1",
         "ffmpeg-python==0.2.0",
-        "flash-attn>=2.5.0",  # Flash Attention 2 for 30-40% faster inference
         # Other Chatterbox dependencies
         "librosa==0.11.0",
         "resemble-perth==1.0.1",
@@ -202,10 +203,11 @@ class SpeechToSpeechApp(
         # Use turbo model for 2x faster inference
         model_id = "openai/whisper-large-v3-turbo"
         
-        # Load model with optimizations for speed
+        # Load model with Flash Attention 2 for maximum speed
         model = AutoModelForSpeechSeq2Seq.from_pretrained(
             model_id,
             torch_dtype=torch.float16,
+            attn_implementation="flash_attention_2",  # 30-40% faster than default
         )
         model.to("cuda:0")
 
@@ -223,7 +225,7 @@ class SpeechToSpeechApp(
             device="cuda:0",
         )
         
-        print("✓ Whisper-turbo model loaded (optimized for low-latency inference)")
+        print("✓ Whisper-turbo model loaded with Flash Attention 2 (ultra-low latency)")
 
     def _setup_chatterbox(self) -> None:
         """Setup Chatterbox text-to-speech model for voice cloning"""
